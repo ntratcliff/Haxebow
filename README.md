@@ -1,2 +1,2 @@
 # Haxebow
-A Rainbow interpreter written in Haxe
+A Rainbow interpreter written in Haxe targeting C++
