@@ -1,10 +1,11 @@
 import haxe.io.*;
 
 class Parser {
+	public var statements:Array<String>;
 	public function new(args:Array<String>) {
 		var imgPath = args[0]; //path to image should always be first argument
-		var pixels = getRGB(imgPath);
-		Sys.print(pixels.toHex());
+		var rgbBytes = getRGB(imgPath);
+		statements = bytesToStatements(rgbBytes);
 	}
 	
 	function getRGB(path:String):Bytes {
@@ -29,5 +30,15 @@ class Parser {
 		}
 		
 		return ret;
+	}
+	
+	function bytesToStatements(pixels:Bytes):Array<String>{
+		var statements = new Array();
+		var i = 0;
+		while(i < pixels.length) {
+			statements.push(pixels.sub(i, 3).toHex().toUpperCase());
+			i += 3;
+		}
+		return statements;
 	}
 }
