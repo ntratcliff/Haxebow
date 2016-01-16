@@ -1,22 +1,35 @@
+import cpp.UInt8;
+
 class Interpreter {
 	private var _statements:Array<String>;
 	private var _loc:Int;
 	
-	public function new(statements:Array<String>){
+	private var _mem:Array<UInt8>;
+	
+	public function new(statements:Array<String>) {
 		_statements = statements;
-		_loc = 0;
+		_loc = 0; 
+		_mem = new Array(); //memory tape
 	}
 	
-	public function begin(){ //begin interpreting program
+	public function begin() { //begin interpreting program
 		while(_loc < _statements.length){
 			var statement = _statements[_loc]; //get current statement
 			var instChar = statement.charAt(0); //get first character of statement for instruction
-			var addr = statement.substring(1, 2); //get addr value
-			var valSwitch = 	statement.charAt(3); //get value swtich
-			var val = statement.substring(4, 5); //get val value
+			var strAddr = "0x"+statement.substring(1, 3); //get addr string
+			var valSwitch = 	statement.charAt(3); //get value switch
+			var strVal = "0x"+statement.substring(4, 6); //get val string
 			
-			switch(instChar){
-				case '0': _exit(val);
+			var addr = Std.parseInt(strAddr); //get addr
+			var val = Std.parseInt(strVal); //get val
+			
+			if(valSwitch == '1') { //if val is an address, get the value of the cell at that address
+				val = _mem[val];
+			}
+			
+			switch(instChar) {
+				case '0': memdump(); return; //exit
+				case '1': _mem[addr] = val; //set cell at addr to val
 				default: trace("Unexpected instruction encountered");
 			}
 			
@@ -24,7 +37,10 @@ class Interpreter {
 		}
 	}
 	
-	private function _exit(val) {
-		trace("exit");
+	//print contents of the memory tape
+	public function memdump() {
+		for(cell in _mem) {
+			Sys.println(StringTools.hex(cell, 2));
+		}
 	}
 }
