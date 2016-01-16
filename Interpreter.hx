@@ -28,8 +28,17 @@ class Interpreter {
 			}
 			
 			switch(instChar) {
-				case '0': memdump(); return; //exit
+				case '0': return; //exit
 				case '1': _mem[addr] = val; //set cell at addr to val
+				case '2': for(cell in _mem) { Sys.print(String.fromCharCode(cell)); }
+				case '3': //input
+				case '6': //lookback
+				case '7': //lookahead
+				case 'A': //add
+				case 'B': //sub
+				case 'C': //mul
+				case 'D': //div
+				case 'E': //mod
 				default: trace("Unexpected instruction encountered");
 			}
 			
