@@ -4,11 +4,11 @@ class Parser {
 	public var statements:Array<String>;
 	public function new(args:Array<String>) {
 		var imgPath = args[0]; //path to image should always be first argument
-		var rgbBytes = getRGB(imgPath);
-		statements = bytesToStatements(rgbBytes);
+		var rgbBytes = _getRGB(imgPath);
+		statements = _bytesToStatements(rgbBytes);
 	}
 	
-	function getRGB(path:String):Bytes {
+	private function _getRGB(path:String):Bytes {
 		var stream = sys.io.File.read(path, true);
 		var data = new format.bmp.Reader(stream).read();
 		
@@ -32,7 +32,7 @@ class Parser {
 		return ret;
 	}
 	
-	function bytesToStatements(pixels:Bytes):Array<String>{
+	private function _bytesToStatements(pixels:Bytes):Array<String>{
 		var statements = new Array();
 		var i = 0;
 		while(i < pixels.length) {
