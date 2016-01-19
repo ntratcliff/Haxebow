@@ -8,6 +8,7 @@ class Parser {
 		statements = _bytesToStatements(rgbBytes);
 	}
 	
+	//returns Bytes object with just RGB values of image at path
 	private function _getRGB(path:String):Bytes {
 		var stream = sys.io.File.read(path, true);
 		var data = new format.bmp.Reader(stream).read();
@@ -32,6 +33,7 @@ class Parser {
 		return ret;
 	}
 	
+	//returns array of 3 byte RGB hex strings from Bytes
 	private function _bytesToStatements(pixels:Bytes):Array<String>{
 		var statements = new Array();
 		var i = 0;
