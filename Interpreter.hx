@@ -53,18 +53,18 @@ class Interpreter {
 			}
 			
 			switch(instChar) {
-				case '0': return; //exit
-				case '1': _mem[addr] = val; //set cell at addr to val
-				case '2': _print(addr, addr2, _format); //print
-				case '3': _input(addr, addr2);//get input 
-				case '5': //label, do nothing
-				case '6': _lookback(val); //lookback
-				case '7': _lookahead(val); //lookahead
-				case 'A': _mem[addr] = _mem[addr] + val; //add val to cell at addr
-				case 'B': _mem[addr] = _mem[addr] - val; //sub val from cell at addr
-				case 'C': _mem[addr] = _mem[addr] * val; //mul cell at addr by val
-				case 'D': _mem[addr] = Std.int(_mem[addr] / val); //div cell at addr by val
-				case 'E': _mem[addr] = _mem[addr] % val; //mod cell at addr by val
+				case Instruction.Exit: return; //exit
+				case Instruction.Set: _mem[addr] = val;
+				case Instruction.Print: _print(addr, addr2, _format);
+				case Instruction.In: _input(addr, addr2);
+				case Instruction.Label: //label, do nothing
+				case Instruction.Lookback: _lookback(val);
+				case Instruction.Lookahead: _lookahead(val);
+				case Instruction.Add: _mem[addr] = _mem[addr] + val; //add val to cell at addr
+				case Instruction.Sub: _mem[addr] = _mem[addr] - val; //sub val from cell at addr
+				case Instruction.Mul: _mem[addr] = _mem[addr] * val; //mul cell at addr by val
+				case Instruction.Div: _mem[addr] = Std.int(_mem[addr] / val); //div cell at addr by val
+				case Instruction.Mod: _mem[addr] = _mem[addr] % val; //mod cell at addr by val
 				default: trace("Unexpected instruction encountered: " + statement);
 			}
 			_loc++; //iterate to next statement
@@ -163,6 +163,22 @@ class Interpreter {
 			}
 		}
 	}
+}
+
+@:enum
+abstract Instruction(String) {
+	var Exit = "0";
+	var Set = "1";
+	var Print = "2";
+	var In = "3";
+	var Label = "5";
+	var Lookback = "6";
+	var Lookahead = "7";
+	var Add = "A";
+	var Sub = "B";
+	var Mul = "C";
+	var Div = "D";
+	var Mod = "E";
 }
 	
 enum PrintFormat {
