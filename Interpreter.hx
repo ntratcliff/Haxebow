@@ -22,8 +22,8 @@ class Interpreter {
 		//get print format from arguments
 		_format = PrintFormat.ASCII;
 		switch(args[1]) {
-			case "-d": _format = PrintFormat.Decimal;
-			case "-h": _format = PrintFormat.Hex;
+			case PrintFormat.Decimal: _format = PrintFormat.Decimal;
+			case PrintFormat.Hex: _format = PrintFormat.Hex;
 		}
 		
 		_loc = 0; 
@@ -205,8 +205,9 @@ abstract ExitCode(Int) from Int to Int{
 	var Unknown = 255;
 }
 
-enum PrintFormat {
-	ASCII;
-	Hex;
-	Decimal;
+@:enum
+abstract PrintFormat(String) {
+	var ASCII = "-a";
+	var Hex = "-h";
+	var Decimal = "-d";
 }
