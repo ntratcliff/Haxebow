@@ -38,6 +38,10 @@ class Parser {
 			case ImageExtension.Bmp: 
 				var data = new format.bmp.Reader(stream).read();
 				ret = format.bmp.Tools.extractARGB(data);
+			case ImageExtension.Png:
+				var data = new format.png.Reader(stream).read();
+				ret = format.png.Tools.extract32(data); //returns bytes as BGRA
+				format.png.Tools.reverseBytes(ret); //sets ret bytes as ARGB
 		}
 		
 		stream.close();
@@ -59,4 +63,5 @@ class Parser {
 @:enum
 abstract ImageExtension(String) {
 	var Bmp = "bmp";
+	var Png = "png";
 }
