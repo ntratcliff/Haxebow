@@ -101,7 +101,6 @@ class Interpreter {
 					}
 					i++;
 				}
-			default: trace("something went very wrong");
 		}
 	}
 	
