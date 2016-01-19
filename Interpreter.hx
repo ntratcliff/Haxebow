@@ -53,7 +53,7 @@ class Interpreter {
 			}
 			
 			switch(instChar) {
-				case Instruction.Exit: return; //exit
+				case Instruction.Exit: _exit(val); //exit
 				case Instruction.Set: _mem[addr] = val;
 				case Instruction.Print: _print(addr, addr2, _format);
 				case Instruction.In: _input(addr, addr2);
@@ -74,6 +74,22 @@ class Interpreter {
 	//print contents of the memory tape
 	static private function _memdump() {
 		_print(0, _mem.length - 1, PrintFormat.Hex);
+	}
+	
+	//print exit status and exit
+	static private function _exit(code:ExitCode) {
+		Sys.print("\nSystem exited with status code: ");
+		switch(code) {
+			case OK: Sys.print("OK");
+			case ProgramException: Sys.print("ProgramException");
+			case RainbowException: Sys.print("RainbowException");
+			case InternalException: Sys.print("InternalException");
+			case Unknown: Sys.print("Unknown");
+			default: Sys.print("Unknown"); code = ExitCode.Unknown;
+		}
+		Sys.print("\n");
+		
+		Sys.exit(code);
 	}
 	
 	//print contents of memory tape from addr to addr2 with specified format
@@ -165,7 +181,7 @@ class Interpreter {
 }
 
 @:enum
-abstract Instruction(String) {
+abstract Instruction(String){
 	var Exit = "0";
 	var Set = "1";
 	var Print = "2";
@@ -179,7 +195,16 @@ abstract Instruction(String) {
 	var Div = "D";
 	var Mod = "E";
 }
-	
+
+@:enum
+abstract ExitCode(Int) from Int to Int{
+	var OK = 0;
+	var ProgramException = 1;
+	var RainbowException = 2;
+	var InternalException = 3;
+	var Unknown = 255;
+}
+
 enum PrintFormat {
 	ASCII;
 	Hex;
