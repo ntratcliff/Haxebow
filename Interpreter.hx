@@ -1,12 +1,16 @@
 import cpp.UInt8;
 
 class Interpreter {
+
 	private var _statements:Array<String>;
 	private var _loc:Int;
 	
 	private var _mem:Array<UInt8>;
 	
-	public function new(statements:Array<String>) {
+	private var _format:PrintFormat;
+	
+	public function new(statements:Array<String>, format:PrintFormat) {
+		_format = format;
 		_statements = statements;
 		_loc = 0; 
 		_mem = new Array(); //memory tape
@@ -34,7 +38,7 @@ class Interpreter {
 			switch(instChar) {
 				case '0': return; //exit
 				case '1': _mem[addr] = val; //set cell at addr to val
-				case '2': for(cell in _mem) { Sys.print(String.fromCharCode(cell)); } //rough print, not fully implemented
+				case '2': _print(addr, addr2, _format); //print
 				case '3': _input(addr, addr2);//get input 
 				case '5': //label, do nothing
 				case '6': _lookback(val); //lookback
@@ -52,8 +56,35 @@ class Interpreter {
 	
 	//print contents of the memory tape
 	public function memdump() {
-		for(cell in _mem) {
-			Sys.println(StringTools.hex(cell, 2));
+		_print(0, _mem.length - 1, PrintFormat.Hex);
+	}
+	
+	//print contents of memory tape from addr to addr2 with specified format
+	private function _print(addr:Int, addr2:Int, format:PrintFormat) {
+		var i = addr;
+		switch(format) {
+			case ASCII: 
+				while(i <= addr2) { 
+					Sys.print(String.fromCharCode(_mem[i])); 
+					i++;
+				}
+			case Hex: 
+				while(i <= addr2) {
+					Sys.print(StringTools.hex(_mem[i], 2)); 
+					if(i < addr2) {
+						Sys.print("-");
+					}
+					i++;
+				}
+			case Decimal: 
+				while(i <= addr2) {
+					Sys.print(_mem[i]);
+					if(i < addr2) {
+						Sys.print("-");
+					}
+					i++;
+				}
+			default: trace("something went very wrong");
 		}
 	}
 	
@@ -74,7 +105,6 @@ class Interpreter {
 				i++;
 			}
 		}
-		
 		
 		_mem[val] = addr + i;
 	}
@@ -116,5 +146,10 @@ class Interpreter {
 			}
 		}
 	}
+}
 	
+enum PrintFormat {
+	ASCII;
+	Hex;
+	Decimal;
 }
