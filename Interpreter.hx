@@ -2,24 +2,41 @@ import cpp.UInt8;
 
 class Interpreter {
 
-	private var _statements:Array<String>;
-	private var _loc:Int;
+	static private var _statements:Array<String>;
+	static private var _loc:Int;
 	
-	private var _mem:Array<UInt8>;
+	static private var _mem:Array<UInt8>;
 	
-	private var _format:PrintFormat;
+	static private var _format:PrintFormat;
 	
-	public function new(statements:Array<String>, format:PrintFormat) {
-		_format = format;
-		_statements = statements;
+	static public function main() { 
+		//get runtime arguments
+		var args = Sys.args(); 
+		
+		//create a new instance of the parser and pass command line arguments
+		var parser = new Parser(args);
+
+		//get statements from parser
+		_statements = parser.statements;
+		
+		//get print format from arguments
+		_format = PrintFormat.ASCII;
+		switch(args[1]) {
+			case "-d": _format = PrintFormat.Decimal;
+			case "-h": _format = PrintFormat.Hex;
+		}
+		
 		_loc = 0; 
-		_mem = new Array(); //memory tape
-		for(i in 0...255) { //fill memory tape with 0 values
+		
+		//create memory tape
+		_mem = new Array();
+		
+		//fill memory tape with 0 values
+		for(i in 0...255) { 
 			_mem[i] = 0;
 		}
-	}
-	
-	public function begin() { //begin interpreting program
+		
+		//begin interpreting program
 		while(_loc < _statements.length){
 			var statement = _statements[_loc]; //get current statement
 			var instChar = statement.charAt(0); //get first character of statement for instruction
@@ -55,12 +72,12 @@ class Interpreter {
 	}
 	
 	//print contents of the memory tape
-	public function memdump() {
+	static private function _memdump() {
 		_print(0, _mem.length - 1, PrintFormat.Hex);
 	}
 	
 	//print contents of memory tape from addr to addr2 with specified format
-	private function _print(addr:Int, addr2:Int, format:PrintFormat) {
+	static private function _print(addr:Int, addr2:Int, format:PrintFormat) {
 		var i = addr;
 		switch(format) {
 			case ASCII: 
@@ -89,7 +106,7 @@ class Interpreter {
 	}
 	
 	//get input from stdin, write to tape starting at addr, and put last addr in cell at val
-	private function _input(addr:Int, val:Int) { 
+	static private function _input(addr:Int, val:Int) { 
 		var stdin = Sys.stdin();
 		var inp = stdin.readLine();
 		stdin.close();
@@ -110,7 +127,7 @@ class Interpreter {
 	}
 	
 	//check if statement is a label and if the value of the label matches val
-	private function _labelMatch(statement:String, val:Int):Bool {
+	static private function _labelMatch(statement:String, val:Int):Bool {
 		if(statement.charAt(0) == '5') { //if statement is label
 			var valSwitch = 	statement.charAt(3); //get value switch
 			var strVal = "0x"+statement.substring(4, 6); //get val string
@@ -128,7 +145,7 @@ class Interpreter {
 	}
 	
 	//lookback and begin execution at first label with value of val
-	private function _lookback(val:Int) {
+	static private function _lookback(val:Int) {
 		while(_loc > 0) {
 			_loc--;
 			if(_labelMatch(_statements[_loc], val)) {
@@ -138,7 +155,7 @@ class Interpreter {
 	}
 	
 	//lookahead and begin execution at first label with value of val
-	private function _lookahead(val:Int) {
+	static private function _lookahead(val:Int) {
 		while(_loc < _statements.length) {
 			_loc++;
 			if(_labelMatch(_statements[_loc],val)) {
