@@ -10,12 +10,7 @@ class Parser {
 	
 	//returns Bytes object with just RGB values of image at path
 	private function _getRGB(path:String):Bytes {
-		var stream = sys.io.File.read(path, true);
-		var data = new format.bmp.Reader(stream).read();
-		
-		stream.close();
-		
-		var src = format.bmp.Tools.extractARGB(data);
+		var src = _getFormatSpecificARGB(path);
 		var srcLen = src.length;
 		var retLen = Std.int(srcLen / 4) * 3;
 		var ret = Bytes.alloc(retLen);
@@ -33,6 +28,22 @@ class Parser {
 		return ret;
 	}
 	
+	//determines file extension and returns ARGB bytes from file's format tools
+	private function _getFormatSpecificARGB(path:String):Bytes {
+		var ret = null;
+		var ext = Path.extension(path).toLowerCase();
+		var stream = sys.io.File.read(path, true);
+		
+		switch(ext) {
+			case ImageExtension.Bmp: 
+				var data = new format.bmp.Reader(stream).read();
+				ret = format.bmp.Tools.extractARGB(data);
+		}
+		
+		stream.close();
+		return ret;
+	}
+	
 	//returns array of 3 byte RGB hex strings from Bytes
 	private function _bytesToStatements(pixels:Bytes):Array<String>{
 		var statements = new Array();
@@ -43,4 +54,9 @@ class Parser {
 		}
 		return statements;
 	}
+}
+
+@:enum
+abstract ImageExtension(String) {
+	var Bmp = "bmp";
 }
